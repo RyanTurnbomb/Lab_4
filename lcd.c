@@ -16,12 +16,10 @@ char LCDCON;
 
 
 void set_SS_lo(){
-    P1DIR |= BIT0;
-	P1OUT &= ~BIT0;
+    P1OUT &= ~BIT0;
 }
 
 void set_SS_hi(){
-	P1DIR |= BIT0;
 	P1OUT |= BIT0;
 }
 
@@ -33,6 +31,8 @@ void initSPI(){
         UCB0CTL1 |= UCSSEL1;
 
         UCB0STAT |= UCLISTEN;
+
+        P1DIR 	 |= BIT0;
 
         P1SEL 	 |= BIT5;
         P1SEL2 	 |= BIT5;                             // clock P1.5
@@ -74,8 +74,6 @@ void initLCD(){
 
 void clearLCD(){
     writeCommandByte(1);
-    LCDCON |= RS_MASK;
-    __delay_cycles(1630);
 }
 
 void moveCursorLine1(){
@@ -152,18 +150,40 @@ void LCD_write_4(char byteToSend){
 }
 
 void writeChar(char asciiChar){
+	writeCommandByte(0x06);
 	writeDataByte(asciiChar);
 }
 
 void writeString(char *string){
-	while(*string != 0){
-		writeChar(*string);
-	    string++;
+	int i;
+	for (i = 0; i < 8; i++) {
+		writeChar(string[i]);
 	}
 }
 
-void scrollString(char* string1, char string2[]){
+void scrollString(char* string_one, char* string_two){
+	char* string1 = string_one;
+	char* string2 = string_two;
 
+	while(1){
+
+	moveCursorLine1();
+	writeString(string1);
+
+	moveCursorLine2();
+	writeString(string2);
+
+	string1++;
+	if(*string1 == 0){
+		string1 = string_one;
+	}
+
+	string2++;
+	if(*string2 == 0){
+		string2 = string_two;
+	}
+	__delay_cycles(1630);
+	}
 }
 
 
