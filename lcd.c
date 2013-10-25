@@ -1,14 +1,25 @@
 /*
  * lcd.c
- *
- *  Created on: Oct 24, 2013
- *      Author: C15Ryan.Turner
+ * Created on: Oct 24, 2013
+ * Author: C2C Ryan Turner
+ * Description- Implementation
+ * of lcd.h
  */
 
-#ifndef LCD_C_
-#define LCD_C_
 
+#include <msp430.h>
+#include "lcd.h"
 
+#define RS_MASK 0x40
 
+char LCDCON = 0;
 
-#endif /* LCD_C_ */
+void writeCommandNibble(char commandNibble);
+void writeCommandByte(char commandByte);
+void writeDataByte(char dataByte);
+void LCD_write_8(char byteToSend);
+void LCD_write_4(char byteToSend);
+void SPI_send(char byteToSend);
+void set_SS_lo();
+void set_SS_hi();
+
