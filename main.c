@@ -17,11 +17,11 @@ int main(void) {
     WDTCTL = WDTPW | WDTHOLD;	// Stop watchdog timer
 
     initSPI();
-    LCDinit();
-    LCDclear();
+    initLCD();
+    clearLCD();
 
     char* string = "ECE382 is my favorite class!";
-    char* string2 = "Great Success!";
+    char string2[] = "Great Success!";
 
     while(1){
     }
