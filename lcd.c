@@ -14,12 +14,6 @@
 
 char LCDCON = 0;
 
-void writeCommandNibble(char commandNibble);
-void writeCommandByte(char commandByte);
-void writeDataByte(char dataByte);
-void LCD_write_8(char byteToSend);
-void LCD_write_4(char byteToSend);
-void SPI_send(char byteToSend);
 
 void set_SS_lo(){
         P2OUT &= ~BIT1;
@@ -49,4 +43,112 @@ void initSPI(){
 
         UCB0CTL1 &= ~UCSWRST;
 
+}
+
+void initLCD(){
+    writeCommandNibble(0x03);
+
+    writeCommandNibble(0x03);
+
+    writeCommandNibble(0x03);
+
+    writeCommandNibble(0x02);
+
+    writeCommandByte(0x28);
+
+    writeCommandByte(0x0C);
+
+    writeCommandByte(0x01);
+
+    writeCommandByte(0x06);
+
+    writeCommandByte(0x01);
+
+    writeCommandByte(0x02);
+
+    SPI_send(0);
+    __delay_cycles(40);
+}
+
+void clearLCD(){
+    writeCommandByte(1);
+    __delay_cycles(1630);
+}
+
+void moveCursorLine1(){
+	writeCommandByte(0x02);
+	__delay_cycles(1630);
+}
+
+void moveCursorLine2(){
+	writeCommandByte(0xC0);
+	__delay_cycles(1630);
+}
+
+
+void writeCommandNibble(char commandNibble){
+    LCDCON &= ~RS_MASK;
+    LCD_write_4(commandNibble);
+    delayMilli();
+}
+
+void writeCommandByte(char commandByte){
+    LCDCON &= ~RS_MASK;
+    LCD_write_8(commandByte);
+    delayMilli();
+}
+
+void writeDataByte(char dataByte){
+    LCDCON |= RS_MASK;
+    LCD_write_8(dataByte);
+    delayMilli();
+}
+
+void LCD_write_8(char byteToSend){
+    unsigned char sendByte = byteToSend;
+
+    sendByte &= 0xF0;
+
+    sendByte = sendByte >> 4;               // rotate to the right 4 times
+
+    LCD_write_4(sendByte);
+
+    sendByte = byteToSend;
+
+    sendByte &= 0x0F;
+
+    LCD_write_4(sendByte);
+}
+
+void LCD_write_4(char byteToSend){
+
+}
+
+void writeChar(char asciiChar){
+
+}
+
+void writeString(char *string){
+
+}
+
+void scrollString(char* string1, char* string2){
+
+}
+
+
+void SPI_send(char byteToSend){
+    volatile char readByte;
+
+    set_SS_lo();
+
+    UCB0TXBUF = byteToSend;
+
+    while(!(UCB0RXIFG & IFG2)){
+        // wait until you've received a byte
+    }
+
+    readByte = UCB0RXBUF;
+
+    set_SS_hi();
 }
