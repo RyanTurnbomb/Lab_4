@@ -12,15 +12,17 @@
 
 #define RS_MASK 0x40
 
-char LCDCON = 0;
+char LCDCON;
 
 
 void set_SS_lo(){
-        P2OUT &= ~BIT1;
+    P1DIR |= BIT0;
+	P1OUT &= ~BIT0;
 }
 
 void set_SS_hi(){
-        P2OUT |= BIT1;
+	P1DIR |= BIT0;
+	P1OUT |= BIT0;
 }
 
 void initSPI(){
@@ -72,16 +74,19 @@ void initLCD(){
 
 void clearLCD(){
     writeCommandByte(1);
+    LCDCON |= RS_MASK;
     __delay_cycles(1630);
 }
 
 void moveCursorLine1(){
 	writeCommandByte(0x02);
+	LCDCON |= RS_MASK;
 	__delay_cycles(1630);
 }
 
 void moveCursorLine2(){
 	writeCommandByte(0xC0);
+	LCDCON |= RS_MASK;
 	__delay_cycles(1630);
 }
 
@@ -121,7 +126,29 @@ void LCD_write_8(char byteToSend){
 }
 
 void LCD_write_4(char byteToSend){
+	unsigned char sendByte = byteToSend;
 
+	sendByte &= 0x0F;
+
+	sendByte |= LCDCON;
+
+	sendByte &= 0x7F;
+
+	SPI_send(sendByte);
+
+	__delay_cycles(40);
+
+	sendByte |= 0x80;
+
+	SPI_send(sendByte);
+
+	__delay_cycles(40);
+
+	sendByte &= 0x7F;
+
+	SPI_send(sendByte);
+
+	__delay_cycles(40);
 }
 
 void writeChar(char asciiChar){
@@ -135,7 +162,7 @@ void writeString(char *string){
 	}
 }
 
-void scrollString(char* string1, char* string2){
+void scrollString(char* string1, char string2[]){
 
 }
 
