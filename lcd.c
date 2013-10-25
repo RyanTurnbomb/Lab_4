@@ -89,19 +89,19 @@ void moveCursorLine2(){
 void writeCommandNibble(char commandNibble){
     LCDCON &= ~RS_MASK;
     LCD_write_4(commandNibble);
-    delayMilli();
+    __delay_cycles(1630);
 }
 
 void writeCommandByte(char commandByte){
     LCDCON &= ~RS_MASK;
     LCD_write_8(commandByte);
-    delayMilli();
+    __delay_cycles(1630);
 }
 
 void writeDataByte(char dataByte){
     LCDCON |= RS_MASK;
     LCD_write_8(dataByte);
-    delayMilli();
+    __delay_cycles(1630);
 }
 
 void LCD_write_8(char byteToSend){
@@ -125,11 +125,14 @@ void LCD_write_4(char byteToSend){
 }
 
 void writeChar(char asciiChar){
-
+	writeDataByte(asciiChar);
 }
 
 void writeString(char *string){
-
+	while(*string != 0){
+		writeChar(*string);
+	    string++;
+	}
 }
 
 void scrollString(char* string1, char* string2){
