@@ -23,3 +23,12 @@ void SPI_send(char byteToSend);
 void set_SS_lo();
 void set_SS_hi();
 
+
+void set_SS_lo(){
+        P2OUT &= ~BIT1;
+}
+
+void set_SS_hi(){
+        P2OUT |= BIT1;
+}
+
