@@ -24,4 +24,14 @@ void writeString(char *string);
 
 void scrollString(char* string1, char* string2);
 
+void writeCommandNibble(char commandNibble);
+
+void writeCommandByte(char commandByte);
+
+void LCD_write_8(char byteToSend);
+
+void LCD_write_4(char byteToSend);
+
+void SPI_send(char byteToSend);
+
 #endif /* LCD_H_ */
