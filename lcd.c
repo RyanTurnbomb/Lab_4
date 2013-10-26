@@ -155,37 +155,45 @@ void writeChar(char asciiChar){
 }
 
 void writeString(char *string){
+	char *current = string;
+	while (*current != 0) {
+		writeChar(*current);
+	    current++;
+	}
+}
+
+void scrollString(char *string_one, char *string_two, int SizeOfScreen){
+	char* current1 = string_one;
+	char* current2 = string_two;
 	int i;
-	for (i = 0; i < 8; i++) {
-		writeChar(string[i]);
+	while (1) {
+		moveCursorLine1();
+	    current1 = Position(string_one, current1, SizeOfScreen);
+	    moveCursorLine2();
+	    current2 = Position(string_two, current2, SizeOfScreen);
+	    for(i = 0; i < 300; i++) {
+	    	__delay_cycles(1630);
+	    }
 	}
 }
 
-void scrollString(char* string_one, char* string_two){
-	char* string1 = string_one;
-	char* string2 = string_two;
+char * Position(char * start, char * current, int SizeOfScreen) {
+    if (*current == 0) {
+        current = start;
+    }
+    char* display = current;
+    int i;
+    for (i = 0; i < SizeOfScreen; i++) {
+        writeDataByte(*display);
+        display++;
+        if (*display == 0) {
+            display = start;
+        }
+    }
 
-	while(1){
+    return ++current;
 
-	moveCursorLine1();
-	writeString(string1);
-
-	moveCursorLine2();
-	writeString(string2);
-
-	string1++;
-	if(*string1 == 0){
-		string1 = string_one;
-	}
-
-	string2++;
-	if(*string2 == 0){
-		string2 = string_two;
-	}
-	__delay_cycles(1630);
-	}
 }
-
 
 void SPI_send(char byteToSend){
     volatile char readByte;
