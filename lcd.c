@@ -44,7 +44,82 @@ void initSPI(){
         P1SEL2 	 |= BIT7;
 
         UCB0CTL1 &= ~UCSWRST;
+}
 
+void SPI_send(char byteToSend){
+    volatile char readByte;
+
+    set_SS_lo();
+
+    UCB0TXBUF = byteToSend;
+
+    while(!(UCB0RXIFG & IFG2)){
+        // wait until you've received a byte
+    }
+
+    readByte = UCB0RXBUF;
+
+    set_SS_hi();
+}
+
+void LCD_write_4(char byteToSend){
+	unsigned char sendByte = byteToSend;
+
+	sendByte &= 0x0F;
+
+	sendByte |= LCDCON;
+
+	sendByte &= 0x7F;
+
+	SPI_send(sendByte);
+
+	__delay_cycles(40);
+
+	sendByte |= 0x80;
+
+	SPI_send(sendByte);
+
+	__delay_cycles(40);
+
+	sendByte &= 0x7F;
+
+	SPI_send(sendByte);
+
+	__delay_cycles(40);
+}
+
+void LCD_write_8(char byteToSend){
+    unsigned char sendByte = byteToSend;
+
+    sendByte &= 0xF0;
+
+    sendByte = sendByte >> 4;               // rotate to the right 4 times
+
+    LCD_write_4(sendByte);
+
+    sendByte = byteToSend;
+
+    sendByte &= 0x0F;
+
+    LCD_write_4(sendByte);
+}
+
+void writeCommandNibble(char commandNibble){
+    LCDCON &= ~RS_MASK;
+    LCD_write_4(commandNibble);
+    __delay_cycles(1630);
+}
+
+void writeCommandByte(char commandByte){
+    LCDCON &= ~RS_MASK;
+    LCD_write_8(commandByte);
+    __delay_cycles(1630);
+}
+
+void writeDataByte(char dataByte){
+    LCDCON |= RS_MASK;
+    LCD_write_8(dataByte);
+    __delay_cycles(1630);
 }
 
 void initLCD(){
@@ -88,67 +163,6 @@ void moveCursorLine2(){
 	__delay_cycles(1630);
 }
 
-
-void writeCommandNibble(char commandNibble){
-    LCDCON &= ~RS_MASK;
-    LCD_write_4(commandNibble);
-    __delay_cycles(1630);
-}
-
-void writeCommandByte(char commandByte){
-    LCDCON &= ~RS_MASK;
-    LCD_write_8(commandByte);
-    __delay_cycles(1630);
-}
-
-void writeDataByte(char dataByte){
-    LCDCON |= RS_MASK;
-    LCD_write_8(dataByte);
-    __delay_cycles(1630);
-}
-
-void LCD_write_8(char byteToSend){
-    unsigned char sendByte = byteToSend;
-
-    sendByte &= 0xF0;
-
-    sendByte = sendByte >> 4;               // rotate to the right 4 times
-
-    LCD_write_4(sendByte);
-
-    sendByte = byteToSend;
-
-    sendByte &= 0x0F;
-
-    LCD_write_4(sendByte);
-}
-
-void LCD_write_4(char byteToSend){
-	unsigned char sendByte = byteToSend;
-
-	sendByte &= 0x0F;
-
-	sendByte |= LCDCON;
-
-	sendByte &= 0x7F;
-
-	SPI_send(sendByte);
-
-	__delay_cycles(40);
-
-	sendByte |= 0x80;
-
-	SPI_send(sendByte);
-
-	__delay_cycles(40);
-
-	sendByte &= 0x7F;
-
-	SPI_send(sendByte);
-
-	__delay_cycles(40);
-}
-
 void writeChar(char asciiChar){
 	writeCommandByte(0x06);
 	writeDataByte(asciiChar);
@@ -159,21 +173,6 @@ void writeString(char *string){
 	while (*current != 0) {
 		writeChar(*current);
 	    current++;
-	}
-}
-
-void scrollString(char *string_one, char *string_two, int SizeOfScreen){
-	char* current1 = string_one;
-	char* current2 = string_two;
-	int i;
-	while (1) {
-		moveCursorLine1();
-	    current1 = Position(string_one, current1, SizeOfScreen);
-	    moveCursorLine2();
-	    current2 = Position(string_two, current2, SizeOfScreen);
-	    for(i = 0; i < 300; i++) {
-	    	__delay_cycles(1630);
-	    }
 	}
 }
 
@@ -195,18 +194,17 @@ char * Position(char * start, char * current, int SizeOfScreen) {
 
 }
 
-void SPI_send(char byteToSend){
-    volatile char readByte;
-
-    set_SS_lo();
-
-    UCB0TXBUF = byteToSend;
-
-    while(!(UCB0RXIFG & IFG2)){
-        // wait until you've received a byte
-    }
-
-    readByte = UCB0RXBUF;
-
-    set_SS_hi();
+void scrollString(char *string_one, char *string_two, int SizeOfScreen){
+	char* current1 = string_one;
+	char* current2 = string_two;
+	int i;
+	while (1) {
+		moveCursorLine1();
+	    current1 = Position(string_one, current1, SizeOfScreen);
+	    moveCursorLine2();
+	    current2 = Position(string_two, current2, SizeOfScreen);
+	    for(i = 0; i < 300; i++) {
+	    	__delay_cycles(1630);
+	    }
+	}
 }
