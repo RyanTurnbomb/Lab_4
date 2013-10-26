@@ -22,7 +22,7 @@ void writeChar(char asciiChar);
 
 void writeString(char *string);
 
-void scrollString(char *string_one, char *string_two, int SizeOfScreen);
+void scrollString(char *string_one, char *string_two);
 
 void writeCommandNibble(char commandNibble);
 
