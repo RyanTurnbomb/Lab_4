@@ -20,8 +20,8 @@ int main(void) {
     initLCD();
     clearLCD();
 
-    char string1[] = "ECE382 is my favorite class!";
-    char string2[] = "Great Success!";
+    char *string_one = "ECE382 is my favorite class!";
+    char *string_two = "Great Success!";
 
     while(1){
     }
