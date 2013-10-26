@@ -24,8 +24,6 @@ void writeString(char *string);
 
 void scrollString(char *string_one, char *string_two, int SizeOfScreen);
 
-char * Position(char * start, char * current, int SizeOfScreen);
-
 void writeCommandNibble(char commandNibble);
 
 void writeCommandByte(char commandByte);
