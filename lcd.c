@@ -176,13 +176,13 @@ void writeString(char *string){
 	}
 }
 
-char * Position(char * start, char * current, int SizeOfScreen) {
+char * Position(char * start, char * current) {
     if (*current == 0) {
         current = start;
     }
     char* display = current;
     int i;
-    for (i = 0; i < SizeOfScreen; i++) {
+    for (i = 0; i < 8; i++) {
         writeDataByte(*display);
         display++;
         if (*display == 0) {
@@ -194,17 +194,17 @@ char * Position(char * start, char * current, int SizeOfScreen) {
 
 }
 
-void scrollString(char *string_one, char *string_two, int SizeOfScreen){
+void scrollString(char *string_one, char *string_two){
 	char* current1 = string_one;
 	char* current2 = string_two;
 	int i;
 	while (1) {
 		moveCursorLine1();
-	    current1 = Position(string_one, current1, SizeOfScreen);
+	    current1 = Position(string_one, current1);
 	    moveCursorLine2();
-	    current2 = Position(string_two, current2, SizeOfScreen);
+	    current2 = Position(string_two, current2);
 	    for(i = 0; i < 300; i++) {
-	    	__delay_cycles(1630);
+	    	__delay_cycles(150000);
 	    }
 	}
 }
