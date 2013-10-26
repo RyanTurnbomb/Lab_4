@@ -21,7 +21,7 @@ int main(void) {
 
 	char *string_one = "ECE382 is my favorite class!";
 	char *string_two = "Great Success!";
-	scrollString(string_one, string_two, SizeOfScreen);
+	scrollString(string_one, string_two);
 
 	while (1) {
 
