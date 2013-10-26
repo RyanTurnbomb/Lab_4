@@ -6,7 +6,6 @@
  * an LCD screen
  */
 
-
 #include <msp430.h> 
 #include "lcd.h"
 
@@ -14,17 +13,19 @@
  * main.c
  */
 int main(void) {
-    WDTCTL = WDTPW | WDTHOLD;	// Stop watchdog timer
+	WDTCTL = WDTPW | WDTHOLD;	// Stop watchdog timer
 
-    initSPI();
-    initLCD();
-    clearLCD();
+	initSPI();
+	initLCD();
+	clearLCD();
 
-    char *string_one = "ECE382 is my favorite class!";
-    char *string_two = "Great Success!";
+	char *string_one = "ECE382 is my favorite class!";
+	char *string_two = "Great Success!";
+	scrollString(string_one, string_two, SizeOfScreen);
 
-    while(1){
-    }
+	while (1) {
+
+	}
 
 	return 0;
 }
